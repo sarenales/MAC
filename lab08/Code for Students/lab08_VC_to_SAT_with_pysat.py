@@ -67,11 +67,10 @@ def binary_search(graph, low, high, m):
             
 def cover_2(graph):     
     #ejercicio 3
-    
-    "while hay aristas sin cubrir:
+    """while hay aristas sin cubrir:
         e = una arista sin cubrir
         añade los dos nodos de e al cover
-        elimina las aristas adyacentes a los dos nodos"
+        elimina las aristas adyacentes a los dos nodos"""
     
 
     
@@ -79,10 +78,10 @@ def cover_2(graph):
 
 def greedy(graph): 
     #ejercicio 4
-    "while hay aristas sin cubrir:
+    """while hay aristas sin cubrir:
         v= el nodo que mas aristas cubra 
         añade v al cover
-        elimina las aristas adyacentes a v" 
+        elimina las aristas adyacentes a v""""
     
 
              
