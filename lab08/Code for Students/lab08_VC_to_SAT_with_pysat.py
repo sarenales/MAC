@@ -24,7 +24,7 @@ def sol(graph):
 def reduce_VC_to_SAT(graph, k):
     # ejercicio 1
     n = len(graph)
-    num_clausules = 0
+    num_clauses = 0
     code = []
     
     for v in range(n):
@@ -81,7 +81,7 @@ def greedy(graph):
     """while hay aristas sin cubrir:
         v= el nodo que mas aristas cubra 
         añade v al cover
-        elimina las aristas adyacentes a v""""
+        elimina las aristas adyacentes a v"""
     
 
              
@@ -336,5 +336,3 @@ if __name__ == '__main__':
     sol(g12)
     elapsed_time = time() - start_time   
     print("Elapsed time: %0.10f seconds." % elapsed_time + "\n")   
-    
-    
