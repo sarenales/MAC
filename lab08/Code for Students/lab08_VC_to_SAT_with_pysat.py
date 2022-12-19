@@ -75,7 +75,6 @@ def cover_2(graph):
                 if i != j :
                     valor = g[i][j]
                     if valor == 1:
-                        
                         for d in range(len(g[j])):
                             g[j][d] = None
                         print(g)
@@ -93,37 +92,40 @@ def greedy(graph):
         v= el nodo que mas aristas cubra 
         añade v al cover
         elimina las aristas adyacentes a v"""
-  
+    
+    g = copy.deepcopy(graph)
     # contamos el numero de aristas por cada nodo
     num_aristas_nodo = []
-    for i in range(0, len(graph)):
-        num_aristas_nodo.append(graph[i].count(1))
+    for i in range(0, len(g)):
+        num_aristas_nodo.append(g[i].count(1))
     print("Inicial:",num_aristas_nodo)
     
     seleccionados = []
     c=0
-    while(num_aristas_nodo != None):
-        # buscamos el nodo con mayor numero de aristas
+    while(np.max(num_aristas_nodo) > 0):
+        # buscamos el indice del nodo con mayor numero de aristas
         pos_mayor = num_aristas_nodo.index(np.max(num_aristas_nodo))
         print("Mayor de la vuelta ", c, ": " ,pos_mayor)
         # anadimos el mayor de la lista
         seleccionados.append(pos_mayor)
         print("Seleccionados de la vuelta ", c, ": " ,seleccionados)
         
-        # quitamos de la lista de numero aristas nodos
-        num_aristas_nodo[pos_mayor] = None
+        # 0 de la lista de numero aristas nodos
+        num_aristas_nodo[pos_mayor] = -1
         print("Resto de la vuelta antes ", c, ": " ,num_aristas_nodo)
         
         
-        # quitamos del grafo las adyacencias
-        for i in range(len(graph[pos_mayor])):
-            for j in range(i, len(graph)):
-                if i != pos_mayor:
-                    valor = graph[i][j]
-                    if valor == 1:
-                        num_aristas_nodo.pop(i)
-                        print("Resto de la vuelta despues ", c, ": " ,num_aristas_nodo)
-                        np.delete(graph,i)
+        # none en el grafo adyacencias
+        for i in range(len(g[pos_mayor])):
+                for j in range(i, len(g)):
+                    if i != j:
+                        valor = g[i][j]
+                        if valor == 1:
+                            num_aristas_nodo[i] = -1
+                            print("Resto de la vuelta despues ", c, ": " ,num_aristas_nodo)
+                            for d in range(len(g[j])):
+                                g[j][d] = -1
+                            print("Grafo: ",g)
                     
         print("--------------")
         c+=1
@@ -142,12 +144,12 @@ if __name__ == '__main__':
          [0, 0, 0, 1, 1]]
         
     start_time = time()
-    # voraz = greedy(g0)
-    factor = cover_2(g0)
+    voraz = greedy(g0)
+    # factor = cover_2(g0)
     print("Respuesta para el grafo g0")
-    #print("El algoritmo greedy devuelve: " + str(voraz)) 
-    print("El algoritmo cover_2 devuelve: " + str(factor))
-    sol(g0)
+    print("El algoritmo greedy devuelve: " + str(voraz)) 
+    # print("El algoritmo cover_2 devuelve: " + str(factor))
+    # sol(g0)
     elapsed_time = time() - start_time   
     print("Elapsed time: %0.10f seconds." % elapsed_time + "\n")   
 
