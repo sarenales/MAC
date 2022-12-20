@@ -32,12 +32,12 @@ def reduce_VC_to_SAT(graph, k):
         for j in range(i+1, len(graph)):
             if graph[i][j] == 1:
                 new_clause = [i+1,j+1]
-                resul = resul + [new_clause]
+                resul = resul.append(new_clause)
                 num_clauses = num_clauses + 1
         list_var = [a for a in range(1, len(graph)+1)]
         constraint = CardEnc.atmost(list_var, k)
         num_clauses = num_clauses + len(constraint.clauses)
-        return resul + constraint.clauses
+    return resul + constraint.clauses
 
 
 def binary_search(graph, low, high):
@@ -96,19 +96,29 @@ def greedy(graph):
     g = copy.deepcopy(graph)
     # contamos el numero de aristas por cada nodo
     num_aristas_nodo = []
+    cont_aristas_total = 0 
     for i in range(0, len(g)):
         num_aristas_nodo.append(g[i].count(1))
+        cont_aristas_total = cont_aristas_total + g[i].count(1) 
     print("Inicial:",num_aristas_nodo)
+    cont_aristas_total = (cont_aristas_total-len(g))//2
+    print("Numero de aristas totales: ", cont_aristas_total, "\n")
     
     seleccionados = []
     c=0
-    while(np.max(num_aristas_nodo) > 0):
+    while(cont_aristas_total > 0):
+        
         # buscamos el indice del nodo con mayor numero de aristas
-        pos_mayor = num_aristas_nodo.index(np.max(num_aristas_nodo))
-        print("Mayor de la vuelta ", c, ": " ,pos_mayor)
+        pos_mayor = num_aristas_nodo.index(max(num_aristas_nodo))
+        print("Mayor de la vuelta ", c, ", es el de la posicion/fila: " ,pos_mayor)
+        
         # anadimos el mayor de la lista
         seleccionados.append(pos_mayor)
         print("Seleccionados de la vuelta ", c, ": " ,seleccionados)
+        
+        # añado otro pq le resta la de la diagonal
+        cont_aristas_total = cont_aristas_total - g[pos_mayor].count(1) + 1
+        print("Tenemos ahora ", cont_aristas_total, " aristas sin cubrir.")
         
         # 0 de la lista de numero aristas nodos
         num_aristas_nodo[pos_mayor] = -1
@@ -122,15 +132,14 @@ def greedy(graph):
                         valor = g[i][j]
                         if valor == 1:
                             num_aristas_nodo[i] = -1
-                            print("Resto de la vuelta despues ", c, ": " ,num_aristas_nodo)
                             for d in range(len(g[j])):
                                 g[j][d] = -1
                             print("Grafo: ",g)
                     
         print("--------------")
         c+=1
-    return(len(seleccionados))
-        
+    return(len(seleccionados)-1)
+
         
         
 
@@ -159,11 +168,11 @@ if __name__ == '__main__':
           [1, 0, 1]]
     
     start_time = time()
-    # voraz = greedy(g1)
-    factor = cover_2(g1)
-    # print("Respuesta para el grafo g1")
-    # print("El algoritmo greedy devuelve: " + str(voraz)) 
-    print("El algoritmo cover_2 devuelve: " + str(factor))
+    voraz = greedy(g1)
+    # factor = cover_2(g1)
+    print("Respuesta para el grafo g1")
+    print("El algoritmo greedy devuelve: " + str(voraz)) 
+    # print("El algoritmo cover_2 devuelve: " + str(factor))
     # sol(g1)
     elapsed_time = time() - start_time   
     print("Elapsed time: %0.10f seconds." % elapsed_time + "\n")   
@@ -174,12 +183,12 @@ if __name__ == '__main__':
           [1, 1, 1, 1]]
     
     start_time = time()
-    # voraz = greedy(g2)
+    voraz = greedy(g2)
     # factor = cover_2(g2)
     # print("Respuesta para el grafo g2")
-    # print("El algoritmo greedy devuelve: " + str(voraz)) 
+    print("El algoritmo greedy devuelve: " + str(voraz)) 
     # print("El algoritmo cover_2 devuelve: " + str(factor))
-    sol(g2)
+    # sol(g2)
     elapsed_time = time() - start_time   
     print("Elapsed time: %0.10f seconds." % elapsed_time + "\n")   
     
@@ -191,11 +200,11 @@ if __name__ == '__main__':
     
     start_time = time()
     voraz = greedy(g3)
-    factor = cover_2(g3)
+    # factor = cover_2(g3)
     print("Respuesta para el grafo g3")
     print("El algoritmo greedy devuelve: " + str(voraz)) 
-    print("El algoritmo cover_2 devuelve: " + str(factor))
-    sol(g3)
+    # print("El algoritmo cover_2 devuelve: " + str(factor))
+    # sol(g3)
     elapsed_time = time() - start_time   
     print("Elapsed time: %0.10f seconds." % elapsed_time + "\n")   
     
