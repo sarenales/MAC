@@ -1,4 +1,4 @@
-import numpy as np
+
 import copy
 from time import time
 from para_dibujar import dibujar, nx
@@ -19,7 +19,7 @@ def sol(graph):
                  " nodos \n" + "La respuesta del SAT-solver es:" + str(answer[1][0:len(graph)]) + 
                  "\n" + "Corresponde al vertex_cover:"
                  +  str([1 if elem > 0 else 0 for elem in answer[1][0:len(graph)]]))
-           #dibujar(graph)        
+           # dibujar(graph)        
     
     
 def reduce_VC_to_SAT(graph, k):
@@ -32,7 +32,7 @@ def reduce_VC_to_SAT(graph, k):
         for j in range(i+1, len(graph)):
             if graph[i][j] == 1:
                 new_clause = [i+1,j+1]
-                resul = resul.append(new_clause)
+                resul.append(new_clause)
                 num_clauses = num_clauses + 1
         list_var = [a for a in range(1, len(graph)+1)]
         constraint = CardEnc.atmost(list_var, k)
@@ -63,23 +63,49 @@ def cover_2(graph):
         añade los dos nodos de e al cover
         elimina las aristas adyacentes a los dos nodos"""
     
-    nodo_seleccionados = []
+    VC = []
     g = copy.deepcopy(graph)
-    i = 0
+    cont_aristas_total = 0
+    for i in range(0, len(g)):
+       cont_aristas_total += g[i].count(1) 
     
-    while i != (len(g))-1:
-        j = 0
-        if g[i][j] != None:
-            nodo_seleccionados.append(g[i])
-            while j != (len(g)):
-                if i != j :
+    while cont_aristas_total>0:
+        
+        for i in range(len(g)):
+            for j in range(i+1, len(g)):
+                if g[i][j] != None:
                     valor = g[i][j]
                     if valor == 1:
-                        for d in range(len(g[j])):
-                            g[j][d] = None
-                        print(g)
-                j+=1
-        i+=1
+                        # anadimos los dos nodos de la arista
+                        VC.append(i)
+                        VC.append(j)
+                        # disminuimos cont
+                        cont_aristas_total = cont_aristas_total - (g[i][i+1:len(g)]).count(1) - (g[j][i+1:len(g)]).count(1)
+                        # aristas visitadas = None
+                        g[i][j] = None
+                        g[j][i] = None #ns si hace falta realmente
+                        # eliminar aristas adyacentes de los nodos
+                        for a in range(j+1, len(g)):
+                            
+                            
+                        
+        
+    
+    # i = 0
+    
+    # while i != (len(g))-1:
+    #     j = 0
+    #     if g[i][j] != None:
+    #         nodo_seleccionados.append(g[i])
+    #         while j != (len(g)):
+    #             if i != j :
+    #                 valor = g[i][j]
+    #                 if valor == 1:
+    #                     for d in range(len(g[j])):
+    #                         g[j][d] = None
+    #                     # print(g)
+    #             j+=1
+    #     i+=1
     return(len(nodo_seleccionados))
                     
 
@@ -98,53 +124,57 @@ def greedy(graph):
     num_aristas_nodo = []
     cont_aristas_total = 0 
     for i in range(0, len(g)):
-        num_aristas_nodo.append(g[i].count(1))
-        cont_aristas_total = cont_aristas_total + g[i].count(1) 
-    print("Inicial:",num_aristas_nodo)
-    cont_aristas_total = (cont_aristas_total-len(g))//2
-    print("Numero de aristas totales: ", cont_aristas_total, "\n")
+        num_aristas_nodo.append((g[i].count(1))-1)
+        cont_aristas_total += g[i].count(1) 
+    #print("Inicial:",num_aristas_nodo)
+    cont_aristas_total = (cont_aristas_total)//2
+    #print("Numero de aristas totales: ", cont_aristas_total, "\n")
     
     seleccionados = []
     c=0
-    while(cont_aristas_total > 0):
+    while cont_aristas_total > 0:
         
         # buscamos el indice del nodo con mayor numero de aristas
         pos_mayor = num_aristas_nodo.index(max(num_aristas_nodo))
-        print("Mayor de la vuelta ", c, ", es el de la posicion/fila: " ,pos_mayor)
+        #print("Mayor de la vuelta ", c, ", es el de la posicion/fila: " ,pos_mayor)
         
         # anadimos el mayor de la lista
         seleccionados.append(pos_mayor)
-        print("Seleccionados de la vuelta ", c, ": " ,seleccionados)
+        #print("Seleccionados para el VC de la vuelta : " ,seleccionados)
         
-        # añado otro pq le resta la de la diagonal
-        cont_aristas_total = cont_aristas_total - g[pos_mayor].count(1) + 1
-        print("Tenemos ahora ", cont_aristas_total, " aristas sin cubrir.")
+        
+        cont_aristas_total = cont_aristas_total - g[pos_mayor].count(1)
+        #print("Tenemos ahora ", cont_aristas_total, " arista(s) sin cubrir.")
         
         # 0 de la lista de numero aristas nodos
         num_aristas_nodo[pos_mayor] = -1
-        print("Resto de la vuelta antes ", c, ": " ,num_aristas_nodo)
+        #print("Resto de la vuelta antes : " ,num_aristas_nodo)
+        
+        for i in range(len(num_aristas_nodo)):
+            if i != pos_mayor:
+                num_aristas_nodo[i] = num_aristas_nodo[i]-1
+                
         
         
-        # none en el grafo adyacencias
-        for i in range(len(g[pos_mayor])):
-                for j in range(i, len(g)):
-                    if i != j:
-                        valor = g[i][j]
-                        if valor == 1:
-                            num_aristas_nodo[i] = -1
-                            for d in range(len(g[j])):
-                                g[j][d] = -1
-                            print("Grafo: ",g)
+        # -1 en el grafo adyacencias
+        # for i in range(len(g[pos_mayor])):
+        #         for j in range(i, len(g)):
+        #             if i != j:
+        #                 valor = g[i][j]
+        #                 if valor == 1:
+        #                     num_aristas_nodo[i] -=1
+        #                     print("Resto de la vuelta depue : " ,num_aristas_nodo)
+        #                     for d in range(len(g[j])):
+        #                         g[i][d] = -1
+        #                     print("Grafo: ",g)
                     
-        print("--------------")
+        #print("--------------")
         c+=1
-    return(len(seleccionados)-1)
-
-        
-        
+    return(len(seleccionados)) 
+                 
+    
 
 if __name__ == '__main__':    
-    
     
     g0 =[[1, 0, 1, 0, 0],
          [0, 1, 0, 1, 0],
@@ -154,11 +184,11 @@ if __name__ == '__main__':
         
     start_time = time()
     voraz = greedy(g0)
-    # factor = cover_2(g0)
+    factor = cover_2(g0)
     print("Respuesta para el grafo g0")
     print("El algoritmo greedy devuelve: " + str(voraz)) 
-    # print("El algoritmo cover_2 devuelve: " + str(factor))
-    # sol(g0)
+    print("El algoritmo cover_2 devuelve: " + str(factor))
+    sol(g0)
     elapsed_time = time() - start_time   
     print("Elapsed time: %0.10f seconds." % elapsed_time + "\n")   
 
@@ -169,11 +199,11 @@ if __name__ == '__main__':
     
     start_time = time()
     voraz = greedy(g1)
-    # factor = cover_2(g1)
+    factor = cover_2(g1)
     print("Respuesta para el grafo g1")
     print("El algoritmo greedy devuelve: " + str(voraz)) 
-    # print("El algoritmo cover_2 devuelve: " + str(factor))
-    # sol(g1)
+    print("El algoritmo cover_2 devuelve: " + str(factor))
+    sol(g1)
     elapsed_time = time() - start_time   
     print("Elapsed time: %0.10f seconds." % elapsed_time + "\n")   
 
@@ -184,11 +214,11 @@ if __name__ == '__main__':
     
     start_time = time()
     voraz = greedy(g2)
-    # factor = cover_2(g2)
-    # print("Respuesta para el grafo g2")
+    factor = cover_2(g2)
+    print("Respuesta para el grafo g2")
     print("El algoritmo greedy devuelve: " + str(voraz)) 
-    # print("El algoritmo cover_2 devuelve: " + str(factor))
-    # sol(g2)
+    print("El algoritmo cover_2 devuelve: " + str(factor))
+    sol(g2)
     elapsed_time = time() - start_time   
     print("Elapsed time: %0.10f seconds." % elapsed_time + "\n")   
     
@@ -200,11 +230,11 @@ if __name__ == '__main__':
     
     start_time = time()
     voraz = greedy(g3)
-    # factor = cover_2(g3)
+    factor = cover_2(g3)
     print("Respuesta para el grafo g3")
     print("El algoritmo greedy devuelve: " + str(voraz)) 
-    # print("El algoritmo cover_2 devuelve: " + str(factor))
-    # sol(g3)
+    print("El algoritmo cover_2 devuelve: " + str(factor))
+    sol(g3)
     elapsed_time = time() - start_time   
     print("Elapsed time: %0.10f seconds." % elapsed_time + "\n")   
     
@@ -313,11 +343,11 @@ if __name__ == '__main__':
           [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
     
     start_time = time()
-    # voraz = greedy(g8)
-    # factor = cover_2(g8)
-    # print("Respuesta para el grafo g8")
-    # print("El algoritmo greedy devuelve: " + str(voraz)) 
-    # print("El algoritmo cover_2 devuelve: " + str(factor))
+    voraz = greedy(g8)
+    factor = cover_2(g8)
+    print("Respuesta para el grafo g8")
+    print("El algoritmo greedy devuelve: " + str(voraz)) 
+    print("El algoritmo cover_2 devuelve: " + str(factor))
     sol(g8)
     elapsed_time = time() - start_time   
     print("Elapsed time: %0.10f seconds." % elapsed_time + "\n")   
@@ -392,3 +422,4 @@ if __name__ == '__main__':
     sol(g12)
     elapsed_time = time() - start_time   
     print("Elapsed time: %0.10f seconds." % elapsed_time + "\n")   
+    
