@@ -34,9 +34,9 @@ def reduce_VC_to_SAT(graph, k):
                 new_clause = [i+1,j+1]
                 resul.append(new_clause)
                 num_clauses = num_clauses + 1
-        list_var = [a for a in range(1, len(graph)+1)]
-        constraint = CardEnc.atmost(list_var, k)
-        num_clauses = num_clauses + len(constraint.clauses)
+    list_var = [a for a in range(1, len(graph)+1)]
+    constraint = CardEnc.atmost(list_var, k)
+    num_clauses = num_clauses + len(constraint.clauses)
     return resul + constraint.clauses
 
 
@@ -66,11 +66,13 @@ def cover_2(graph):
     VC = []
     g = copy.deepcopy(graph)
     cont_aristas_total = 0
-    for i in range(0, len(g)):
+    i=0
+    for i in range(len(g)):
        cont_aristas_total += g[i].count(1) 
+    cont_aristas_total = ((cont_aristas_total-len(g))//2)
+    # print("total de aristas: ",cont_aristas_total)
     
-    while cont_aristas_total>0:
-        
+    while cont_aristas_total>0:  
         for i in range(len(g)):
             for j in range(i+1, len(g)):
                 if g[i][j] != None:
@@ -79,34 +81,23 @@ def cover_2(graph):
                         # anadimos los dos nodos de la arista
                         VC.append(i)
                         VC.append(j)
+                        # print(VC)
                         # disminuimos cont
                         cont_aristas_total = cont_aristas_total - (g[i][i+1:len(g)]).count(1) - (g[j][i+1:len(g)]).count(1)
+                        # print("quedan",cont_aristas_total, " aristas")
                         # aristas visitadas = None
                         g[i][j] = None
                         g[j][i] = None #ns si hace falta realmente
+                        # print(g)
                         # eliminar aristas adyacentes de los nodos
-                        for a in range(j+1, len(g)):
-                            
-                            
-                        
-        
-    
-    # i = 0
-    
-    # while i != (len(g))-1:
-    #     j = 0
-    #     if g[i][j] != None:
-    #         nodo_seleccionados.append(g[i])
-    #         while j != (len(g)):
-    #             if i != j :
-    #                 valor = g[i][j]
-    #                 if valor == 1:
-    #                     for d in range(len(g[j])):
-    #                         g[j][d] = None
-    #                     # print(g)
-    #             j+=1
-    #     i+=1
-    return(len(nodo_seleccionados))
+                        for a in range(len(g[i])):
+                            if g[i][a] == 1:
+                                g[i][a] = None
+                        for b in range(len(g[j])):
+                            if g[j][b] == 1:
+                                g[j][b] = None
+                        # print(g)
+    return(len(VC))
                     
 
     
@@ -127,7 +118,7 @@ def greedy(graph):
         num_aristas_nodo.append((g[i].count(1))-1)
         cont_aristas_total += g[i].count(1) 
     #print("Inicial:",num_aristas_nodo)
-    cont_aristas_total = (cont_aristas_total)//2
+    cont_aristas_total = (cont_aristas_total - len(g))//2
     #print("Numero de aristas totales: ", cont_aristas_total, "\n")
     
     seleccionados = []
