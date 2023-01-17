@@ -19,24 +19,24 @@ def sol(graph):
                  " nodos \n" + "La respuesta del SAT-solver es:" + str(answer[1][0:len(graph)]) + 
                  "\n" + "Corresponde al vertex_cover:"
                  +  str([1 if elem > 0 else 0 for elem in answer[1][0:len(graph)]]))
-           # dibujar(graph)        
+           #dibujar(graph)        
     
     
 def reduce_VC_to_SAT(graph, k):
     # ejercicio 1
     # devulve la lista de clausulas al pasar el grafo
     
-    num_clauses = 0
+    cont = 0
     resul = []
     for i in range(len(graph)):
         for j in range(i+1, len(graph)):
             if graph[i][j] == 1:
-                new_clause = [i+1,j+1]
-                resul.append(new_clause)
-                num_clauses = num_clauses + 1
+                clausula = [i+1,j+1]
+                resul.append(clausula)
+                cont = cont + 1
     list_var = [a for a in range(1, len(graph)+1)]
     constraint = CardEnc.atmost(list_var, k)
-    num_clauses = num_clauses + len(constraint.clauses)
+    cont = cont + len(constraint.clauses)
     return resul + constraint.clauses
 
 
@@ -127,39 +127,30 @@ def greedy(graph):
         
         # buscamos el indice del nodo con mayor numero de aristas
         pos_mayor = num_aristas_nodo.index(max(num_aristas_nodo))
-        #print("Mayor de la vuelta ", c, ", es el de la posicion/fila: " ,pos_mayor)
-        
+        #print("Mayor de la vuelta ", c, ", es el de la posicion/fila: " ,pos_mayor)      
+
         # anadimos el mayor de la lista
         seleccionados.append(pos_mayor)
         #print("Seleccionados para el VC de la vuelta : " ,seleccionados)
         
         
-        cont_aristas_total = cont_aristas_total - g[pos_mayor].count(1)
-        #print("Tenemos ahora ", cont_aristas_total, " arista(s) sin cubrir.")
+        cont_aristas_total = cont_aristas_total - (g[pos_mayor].count(1) )+1
+        # cont_aristas_total = cont_aristas_total - num_aristas_nodo[pos_mayor]
+        # print("Tenemos ahora ", cont_aristas_total, " arista(s) sin cubrir.")
         
-        # 0 de la lista de numero aristas nodos
+        # -1 de la lista de numero aristas nodos
         num_aristas_nodo[pos_mayor] = -1
         #print("Resto de la vuelta antes : " ,num_aristas_nodo)
         
-        for i in range(len(num_aristas_nodo)):
-            if i != pos_mayor:
-                num_aristas_nodo[i] = num_aristas_nodo[i]-1
-                
-        
-        
-        # -1 en el grafo adyacencias
-        # for i in range(len(g[pos_mayor])):
-        #         for j in range(i, len(g)):
-        #             if i != j:
-        #                 valor = g[i][j]
-        #                 if valor == 1:
-        #                     num_aristas_nodo[i] -=1
-        #                     print("Resto de la vuelta depue : " ,num_aristas_nodo)
-        #                     for d in range(len(g[j])):
-        #                         g[i][d] = -1
-        #                     print("Grafo: ",g)
-                    
-        #print("--------------")
+        # for i in range(len(num_aristas_nodo)):
+        #     if i != pos_mayor:
+        #         num_aristas_nodo[i] = num_aristas_nodo[i]-1
+        for i in range(len(g[pos_mayor])):
+            if g[pos_mayor][i]==1:
+                for j in range(len(g[i])):
+                    if g[j][pos_mayor] == 1:
+                        g[j][pos_mayor]=0
+        #print(g)
         c+=1
     return(len(seleccionados)) 
                  
@@ -354,11 +345,11 @@ if __name__ == '__main__':
     
     start_time = time()
     voraz = greedy(g9)
-    factor = cover_2(g9)
+    #factor = cover_2(g9)
     print("Respuesta para el grafo g9")
     print("El algoritmo greedy devuelve: " + str(voraz)) 
-    print("El algoritmo cover_2 devuelve: " + str(factor))
-    sol(g9)
+    #print("El algoritmo cover_2 devuelve: " + str(factor))
+    # sol(g9)
     elapsed_time = time() - start_time   
     print("Elapsed time: %0.10f seconds." % elapsed_time + "\n")   
     
