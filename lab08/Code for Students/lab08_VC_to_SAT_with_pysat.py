@@ -26,17 +26,13 @@ def reduce_VC_to_SAT(graph, k):
     # ejercicio 1
     # devulve la lista de clausulas al pasar el grafo
     
-    cont = 0
     resul = []
     for i in range(len(graph)):
         for j in range(i+1, len(graph)):
             if graph[i][j] == 1:
-                clausula = [i+1,j+1]
-                resul.append(clausula)
-                cont = cont + 1
+                resul.append([i+1,j+1])
     list_var = [a for a in range(1, len(graph)+1)]
     constraint = CardEnc.atmost(list_var, k)
-    cont = cont + len(constraint.clauses)
     return resul + constraint.clauses
 
 
