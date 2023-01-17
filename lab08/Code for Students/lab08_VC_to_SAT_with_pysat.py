@@ -100,7 +100,25 @@ def cover_2(graph):
     return(len(VC))
                     
 
-    
+  def cover_2_1(graph):
+    """while hay aristas sin cubrir:
+    e = una arista sin cubrir
+    añade los dos nodos de e al cover
+    elimina las aristas adyacentes a los dos nodos"""
+
+    n = len(graph)
+    sol_VC = []
+
+    for i in range(n):
+        if i not in sol_VC and 1 in graph[i][i+1:]:
+            indice = i + 1 + graph[i][i+1:].index(1)
+            while(1 in graph[i][indice+1:] and indice in sol_VC):
+                indice = indice + graph[i][indice+1:].index(1) + 1
+            if indice not in sol_VC:
+                sol_VC.append(i)
+                sol_VC.append(indice)
+    return len(sol_VC) 
+  
 
 
 def greedy(graph): 
